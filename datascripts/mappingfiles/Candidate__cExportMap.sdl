@@ -1,0 +1,8 @@
+Id=Load_ID__c
+Name=Name
+Education__c=Education__c
+First_Name__c=First_Name__c
+Last_Name__c=Last_Name__c
+Previous_Experience__c=Previous_Experience__c
+Salary_Requirements__c=Salary_Requirements__c
+Years_In_Previous_Position__c=Years_In_Previous_Position__c

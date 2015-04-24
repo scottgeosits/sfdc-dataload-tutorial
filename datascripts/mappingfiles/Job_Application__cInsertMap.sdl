@@ -1,0 +1,5 @@
+LOAD_ID__C=Load_ID__c
+Candidate__c=Candidate__r:\Load_ID__c
+Position__c=Position__r:\Load_ID__c
+Stage__c=Stage__c
+Status__C=Status__c

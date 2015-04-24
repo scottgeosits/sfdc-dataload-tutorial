@@ -1,0 +1,12 @@
+Id=Load_ID__c
+Name=Name
+Approval_Status__c=Approval_Status__c
+Department__c=Department__c
+Education__c=Education__c
+Hiring_Manager__c=Hiring_Manager__c
+Job_Description__c=Job_Description__c
+Location__c=Location__c
+Pay_Grade__c=Pay_Grade__c
+Salary_Range__c=Salary_Range__c
+Skills_Required__c=Skills_Required__c
+Status__c=Status__c

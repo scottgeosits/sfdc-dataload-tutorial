@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Tasks for building and deploying to Salesforce" default="" basedir="." xmlns:sf="antlib:com.salesforce">
+
+	<property environment="env"/>
+
+	<property name="dataLoaderAPIVersion" value="29.0.0" />
+
+	<!-- Define required jars-->
+	<path id="taskDependencies">
+	<pathelement location="./lib/ant.jar"/>
+        <pathelement location="./lib/antutils.jar"/>
+	<pathelement location="./lib/commons-io-2.4.jar"/>
+	<pathelement location="./lib/SfApexDoc.jar"/>
+        <pathelement location="${basedir}/lib/commons-lang-2.6.jar"/>
+        <pathelement location="${basedir}/lib/commons-logging-1.1.3.jar"/>
+        <pathelement location="${basedir}/lib/gson-2.2.4.jar"/>
+        <pathelement location="${basedir}/lib/httpclient-4.3.5.jar"/>
+        <pathelement location="${basedir}/lib/httpcore-4.3.2.jar"/>
+        <pathelement location="${basedir}/lib/json-20080701.jar"/>
+	</path>
+
+	<taskdef uri="antlib:com.salesforce" resource="com/salesforce/antlib.xml" classpath="./lib/ant-salesforce.jar"/>
+
+	<taskdef name="createFoldersBuildfile" classname="com.antutilities.salesforce.metadata.CreateFoldersBuildfile">
+		<classpath refid="taskDependencies" />
+	</taskdef>
+
+	<taskdef name="createPackageFiles" classname="com.antutilities.salesforce.metadata.CreatePackageFiles">
+		<classpath refid="taskDependencies" />
+	</taskdef>
+
+	<!-- ============================================================ -->
+	<!-- Metadata Backup Targets:        							  -->
+	<!-- ============================================================ -->
+	<target name="createFolders">
+		<delete file="${basedir}/tempBuild.xml" />
+
+	    <createFoldersBuildfile buildFilename="${basedir}/tempBuild.xml" sfClientId="${sf.clientid}" sfClientSecret="${sf.clientsecret}" sfUsername="${sf.username}" sfPassword="${sf.password}" sfServer="${sf.server}" apiVersion="${apiVersion}" sfOauthEndpoint="${sf.oauthendpoint}" sfRestEndpoint="${sf.restendpoint}"/>
+	</target>
+
+	<target name="createPackages">
+		<delete file="${basedir}/objects.xml" />
+		<delete file="${basedir}/remaining.xml" />
+
+	    <createPackageFiles baseDir="${basedir}" logDir="${basedir}/metadata/${orgname}/lists" sfClientId="${sf.clientid}" sfClientSecret="${sf.clientsecret}" sfUsername="${sf.username}" sfPassword="${sf.password}" sfServer="${sf.server}" apiVersion="${apiVersion}" sfOauthEndpoint="${sf.oauthendpoint}" sfRestEndpoint="${sf.restendpoint}"/>
+	</target>
+
+	<target name="describeMetadata" description="Describes all Salesforce metadata components.">
+		<sf:describeMetadata
+			username="${sf.username}"
+			password="${sf.password}"
+			serverurl="${sf.server}"/>
+	</target>
+
+	<target name="listMetadataComponents">
+		<delete dir="${basedir}/metadata/${orgname}/lists" />
+		<mkdir dir="${basedir}/metadata/${orgname}/lists" />
+
+		<!-- custom / standard object subcomponents -->
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomField" resultFilePath="${basedir}/metadata/${orgname}/lists/CustomField.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="BusinessProcess" resultFilePath="${basedir}/metadata/${orgname}/lists/BusinessProcess.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="RecordType" resultFilePath="${basedir}/metadata/${orgname}/lists/RecordType.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="WebLink" resultFilePath="${basedir}/metadata/${orgname}/lists/WebLink.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ValidationRule" resultFilePath="${basedir}/metadata/${orgname}/lists/ValidationRule.log" apiVersion="${apiVersion}"/>
+		<!--
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="NamedFilter" resultFilePath="${basedir}/metadata/${orgname}/lists/NamedFilter.log" apiVersion="${apiVersion}"/>
+		-->
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="SharingReason" resultFilePath="${basedir}/metadata/${orgname}/lists/SharingReason.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ListView" resultFilePath="${basedir}/metadata/${orgname}/lists/ListView.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="FieldSet" resultFilePath="${basedir}/metadata/${orgname}/lists/FieldSet.log" apiVersion="${apiVersion}"/>
+		<!-- end custom / standard object subcomponents -->
+
+		<!-- other, non wildcard components -->
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Letterhead" resultFilePath="${basedir}/metadata/${orgname}/lists/Letterhead.log" apiVersion="${apiVersion}"/>
+
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="LeadSharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/LeadSharingRules.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="LeadOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/LeadOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="LeadCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/LeadCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CampaignSharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/CampaignSharingRules.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CampaignOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/CampaignOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CampaignCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/CampaignCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CaseSharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/CaseSharingRules.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CaseOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/CaseOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CaseCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/CaseCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ContactSharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/ContactSharingRules.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ContactOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/ContactOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ContactCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/ContactCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="OpportunitySharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/OpportunitySharingRules.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="OpportunityOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/OpportunityOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="OpportunityCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/OpportunityCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="AccountSharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/AccountSharingRules.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="AccountOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/AccountOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="AccountCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/AccountCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomObjectSharingRules" resultFilePath="${basedir}/metadata/${orgname}/lists/CustomObjectSharingRules.log" apiVersion="${apiVersion}"/>
+
+		<!-- this one errors out, not an important one anyway -->
+		<!--
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomObjectOwnerSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/CustomObjectOwnerSharingRule.log" apiVersion="${apiVersion}"/>
+		-->
+
+		<sf:listMetadata username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomObjectCriteriaBasedSharingRule" resultFilePath="${basedir}/metadata/${orgname}/lists/CustomObjectCriteriaBasedSharingRule.log" apiVersion="${apiVersion}"/>
+	</target>
+
+	<target name="retrieveFullOrg" description="Retrieves a full backup of metadata (more than the retrieveOrg target does) from the specified organization.  Retrieved data is stored in metadata/{$orgname} where orgname is defined in your property file.">			
+
+		<delete dir="${basedir}/metadata/${orgname}" />
+
+		<mkdir dir="${basedir}/metadata/${orgname}" />
+		<mkdir dir="${basedir}/metadata/${orgname}/lists" />
+		<mkdir dir="${basedir}/metadata/${orgname}/src" />
+
+		<antcall target="listMetadataComponents" />
+
+		<antcall target="createFolders" />
+
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ApexClass" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ApexComponent" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ApexPage" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ApexTrigger" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomApplication" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomLabels" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomObjectTranslation" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomPageWebLink" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomSite" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="CustomTab" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="DataCategoryGroup" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="FieldSet" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Flow" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Group" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="HomePageComponent" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="HomePageLayout" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Layout" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="PermissionSet" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<!--
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Portal" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		-->
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Profile" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Queue" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="RecordType" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="RemoteSiteSetting" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="ReportType" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Role" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Scontrol" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+		<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" metadataType="Workflow" batchSize="50" retrieveTarget="${basedir}/metadata/${orgname}/src"/>
+
+		<!-- crank up the pollWaitMillis / maxPoll on the static resources, since they are large, binary files -->		
+		<sf:bulkRetrieve pollWaitMillis="30000" maxPoll="100" username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" batchSize="50" metadataType="StaticResource" retrieveTarget="${basedir}/metadata/${orgname}/src"/>		
+
+		<!-- get the custom objects based on a package.xml file since we have to dot qualify all the extra metadata on these -->	
+
+		<!-- call custom target now to create the objects.xml and remaining.xml files -->
+		<antcall target="createPackages" />
+
+		<sf:retrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" retrieveTarget="${basedir}/metadata/${orgname}/src" unpackaged="${basedir}/objects.xml"/>		
+
+		<!-- get the remaining components based on a package.xml file since we have to dot qualify all the extra metadata on these -->
+		<sf:retrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" retrieveTarget="${basedir}/metadata/${orgname}/src" unpackaged="${basedir}/remaining.xml"/>		
+
+		<!-- 
+		ERROR (api version issue, try again with new release) <sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" metadataType="ArticleType" retrieveTarget="${sf.dir}/metadata"/>
+		ERROR (not in org) <sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" metadataType="EntitlementTemplate" retrieveTarget="${sf.dir}/metadata"/>
+		ERROR (api version issue, try again with new release)<sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" metadataType="rules" retrieveTarget="${sf.dir}/metadata"/>
+		ERROR (not in org) <sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" metadataType="Territory" retrieveTarget="${sf.dir}/metadata"/>
+		ERROR (not in org) <sf:bulkRetrieve username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" metadataType="Translations" retrieveTarget="${sf.dir}/metadata"/>
+		-->
+
+		<!-- Finally run the custom build file to fetch all of the folder items -->
+		<ant antfile="${basedir}/tempBuild.xml" inheritAll="true" />
+
+		<!-- Cleanup -->
+		<delete file="${basedir}/tempBuild.xml" />
+		<delete file="${basedir}/objects.xml" />
+		<delete file="${basedir}/remaining.xml" />
+
+	</target>
+	
+	<!-- ============================================================ -->
+	<!-- Deployment Targets:  org to org 							  -->
+	<!-- ============================================================ -->
+	<target name="retrievePackage" description="Retrieves the specified package from the specified organization. Pass the name of the deployment file to build the package from via -DdeployFile=[xml file name]." >
+		<delete dir="${basedir}/deploystage" />
+		<mkdir dir="${basedir}/deploystage" />
+		<echo>Retrieving code into ${basedir}/deploystage from ${sf.username}, ${sf.server} from packages/${deployFile}</echo>
+		<sf:retrieve 
+		   username="${sf.username}" 
+		   password="${sf.password}" 
+		   serverurl="${sf.server}" 
+		   retrieveTarget="${basedir}/deploystage"
+		   unpackaged="packages/${deployFile}"
+		   pollWaitMillis="10000"
+		   maxPoll="100"/>
+	</target>
+	
+	<target name="deployPackage" description="Deploys everything stored in the /deploystage directory. You must specify the org to deploy to via -propertyfile=[org property file name]. Use -DrunAllTests=[booleanValue] to run all the tests or skip them. Use -DisValidate=[booleanValue] to determine if you only want to validate the deploy (i.e., not actually deploy anything)">
+		<delete file="${basedir}/deploystage/deploy.zip"/>
+		<zip destfile="${basedir}/deploystage/deploy.zip" update="true">
+			<fileset dir="${basedir}/deploystage" includes="**/*"/>
+		</zip>
+		<sf:deploy username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" zipFile="${basedir}/deploystage/deploy.zip" maxPoll="2000" pollWaitMillis="10000" rollbackOnError="true" runAllTests="${runAllTests}" checkOnly="${isValidate}" logType="Debugonly" singlePackage="true" allowMissingFiles="false" />
+	</target>
+	
+	<target name="cleanupDeploy" description="Removes the deploystage directory.">
+		<echo>Deleting the ${basedir}/deploystage directory</echo>
+		<delete dir="${basedir}/deploystage"/>
+	</target>
+
+
+	<!-- ============================================================ -->
+	<!-- Deployment Targets:  local directory to org 				  -->
+	<!-- ============================================================ -->
+    <property name="deployRoot" value="src"/>
+    <property name="isValidate" value="true"/>
+    <property name="purgeOnDelete" value="false"/>
+
+    <target name="deployDirectory" description="Deploys the files in the directory specified by -DdeployRoot=[relative/path/to/dir] (defaults to src/ directory). Use -DrunAllTests=[booleanValue] to run all the tests or skip them. Use -DisValidate=[booleanValue] to determine if you only want to validate the deploy (i.e., not actually deploy anything)">
+		<sf:deploy username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" 
+			       deployRoot="${deployRoot}"
+			       maxPoll="2000" pollWaitMillis="10000" rollbackOnError="true" 
+			       runAllTests="${runAllTests}" 
+			       checkOnly="${isValidate}" 
+			       logType="Debugonly" singlePackage="true" allowMissingFiles="false" />
+    </target>
+
+    <target name="undeployCode" description="Applies the destructive changes in the 'packages/deletes' directory.">
+      <sf:deploy username="${sf.username}" password="${sf.password}" serverurl="${sf.server}" maxPoll="10000" purgeOnDelete="${purgeOnDelete}" deployRoot="${deletesRoot}"/>
+    </target>
+	
+	<target name="testPackageFile" description="This will test the package file by retrieving the package from a specified org. Use -propertyfile to specify the environment and -DdeployFile=[filename] to specify the package file to test">
+		<record name="build.log" loglevel="verbose" append="false"/>
+		<echo>Testing the package file found at ${basedir}/packages/${deployFile}</echo>
+		<antcall target="retrievePackage" />
+		<antcall target="cleanupDeploy" />
+		<condition property="failedDeploy">
+			<resourcecontains resource="build.log" substring="[sf:retrieve] Retrieve warnings"/>
+		</condition>
+		<delete file="${basedir}/build.log"/>
+		<fail message="Errors occurred during retrieve. Check above log for details.">
+			<condition>
+				<isset property="failedDeploy"/>
+			</condition>
+		</fail>
+	</target>
+
+	<!-- ============================================================ -->
+	<!-- Data export / import Targets 								  -->
+	<!-- ============================================================ -->
+    <target name="initDataDirectory" description="Removes and re-creates a blank data directory in orgs/${orgname}">
+        <delete dir="${basedir}/orgs/${orgname}/data"/>
+    </target>
+	<target name="insertData" description="Export Salesforce objects">
+        <sfInsert object="${object}" orgserver="${sf.server}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}" />
+	</target>
+    <target name="exportData" description="Export Salesforce objects">
+        <sfExport object="${object}" orgserver="${sf.orgserver}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}" soql="${soql}" />
+    </target>
+
+    <target name="upsertData" description="Upsert Salesforce objects">
+        <sfUpsert object="${object}" orgserver="${sf.orgserver}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}" externalIdField="Load_ID__c" />
+    </target>
+    <target name="deleteData" description="Delete Salesforce objects">
+        <sfExport object="${object}" orgserver="${sf.orgserver}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}" soql="${soql}" />
+        <copy file="${basedir}/orgs/${orgname}/data/${object}Export.csv" tofile="${basedir}/datascripts/datafiles/${object}Delete.csv"/>
+        <sfDelete object="${object}" orgserver="${sf.orgserver}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}" />
+        <delete file="${basedir}/datascripts/datafiles/${object}Delete.csv" />
+    </target>
+	
+	<target name="importCustomSettings" description="Import Initial Custom Setting Data">
+        <sfInsert object="someCustomSetting__c" orgserver="${sf.server}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}"/>
+    </target>
+
+	<target name="updateDataFiles" description="Refreshes the data files found in datascripts/datafiles from a specified org's data directory.  This expects the exportData target to have been run first to generate output CSV data load files.  Invoke with -Dorg=[org name, ex. asdevqa] to specify the org to copy files from." >
+	    <copy todir="${basedir}/datascripts/datafiles">
+		<fileset dir="${basedir}/orgs/${org}/data" includes="**/*__cExport.csv"/>
+		<mapper type="glob" from="*__cExport.csv" to="*__cInsert.csv"/>
+	    </copy>
+	</target>
+
+    <macrodef name="sfInsert">
+        <attribute name="object"/>
+		<attribute name="basedir"/>
+		<attribute name="orgname"/>
+		<attribute name="username"/>
+		<attribute name="password"/>
+		<attribute name="orgserver"/>
+
+        <sequential>
+            <echo message="Importing @{object}"/>
+            <mkdir dir="@{basedir}/orgs/@{orgname}/data"/>
+            <copy file="@{basedir}/datascripts/template-insert-process-conf.xml" tofile="@{basedir}/orgs/@{orgname}/data/process-conf.xml" overwrite="true" failonerror="true"/>
+            <replace file="@{basedir}/orgs/@{orgname}/data/process-conf.xml">
+                <replacefilter token="_ORGSERVER_" value="@{orgserver}"/>
+                <replacefilter token="_USERNAME_" value="@{username}"/>
+                <replacefilter token="_ENCRYPTED_PASSWORD_" value="@{password}"/>
+                <replacefilter token="_ENCRYPTION_KEY_FILE_" value="@{basedir}/datascripts/dataloader_encryption_key.txt"/>
+                <replacefilter token="_DEBUG_MSG_FILE_" value="@{basedir}/orgs/@{orgname}/data/debug.log"/>
+                <replacefilter token="_OBJECT_" value="@{object}"/>
+                <replacefilter token="_DATA_FILENAME_" value="@{basedir}/datascripts/datafiles/@{object}Insert.csv"/>
+                <replacefilter token="_MAPPING_FILE_" value="@{basedir}/datascripts/mappingfiles/@{object}InsertMap.sdl"/>
+                <replacefilter token="_OUTPUT_SUCCESS_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Insert_success.csv"/>
+                <replacefilter token="_OUTPUT_ERROR_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Insert_error.csv"/>
+            	<replacefilter token="_PROCESS_NAME_" value="@{object}InsertProcess"/>
+            </replace>
+            <java classname="com.salesforce.dataloader.process.ProcessRunner" classpath="@{basedir}/lib/dataloader-${dataLoaderAPIVersion}-uber.jar" failonerror="true">
+                <sysproperty key="salesforce.config.dir" value="@{basedir}/orgs/@{orgname}/data"/>
+                <arg line="process.name=insertObject"/>
+            </java>
+        </sequential>
+    </macrodef>
+	
+	<macrodef name="sfUpsert">
+	        <attribute name="object"/>
+			<attribute name="basedir"/>
+			<attribute name="orgname"/>
+			<attribute name="username"/>
+			<attribute name="password"/>
+			<attribute name="orgserver"/>
+	    	<attribute name="externalIdField"/>
+
+	        <sequential>
+	            <echo message="Upserting @{object}"/>
+	            <mkdir dir="@{basedir}/orgs/@{orgname}/data"/>
+	            <copy file="@{basedir}/datascripts/template-upsert-process-conf.xml" tofile="@{basedir}/orgs/@{orgname}/data/process-conf.xml" overwrite="true" failonerror="true"/>
+	            <replace file="@{basedir}/orgs/@{orgname}/data/process-conf.xml">
+	                <replacefilter token="_ORGSERVER_" value="@{orgserver}"/>
+	                <replacefilter token="_USERNAME_" value="@{username}"/>
+	                <replacefilter token="_ENCRYPTED_PASSWORD_" value="@{password}"/>
+	                <replacefilter token="_ENCRYPTION_KEY_FILE_" value="@{basedir}/datascripts/dataloader_encryption_key.txt"/>
+	                <replacefilter token="_DEBUG_MSG_FILE_" value="@{basedir}/orgs/@{orgname}/data/debug.log"/>
+	                <replacefilter token="_OBJECT_" value="@{object}"/>
+	                <replacefilter token="_DATA_FILENAME_" value="@{basedir}/datascripts/datafiles/@{object}Insert.csv"/>
+	                <replacefilter token="_MAPPING_FILE_" value="@{basedir}/datascripts/mappingfiles/@{object}InsertMap.sdl"/>
+	                <replacefilter token="_OUTPUT_SUCCESS_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Insert_success.csv"/>
+	                <replacefilter token="_OUTPUT_ERROR_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Insert_error.csv"/>
+	            	<replacefilter token="_EXTERNAL_ID_FIELD_" value="@{externalIdField}"/>
+	            	<replacefilter token="_PROCESS_NAME_" value="@{object}UpsertProcess"/>
+	            </replace>
+	            <java classname="com.salesforce.dataloader.process.ProcessRunner" classpath="@{basedir}/lib/dataloader-${dataLoaderAPIVersion}-uber.jar" failonerror="true">
+	                <sysproperty key="salesforce.config.dir" value="@{basedir}/orgs/@{orgname}/data"/>
+	                <arg line="process.name=upsertObject"/>
+	            </java>
+	        </sequential>
+	    </macrodef>
+
+
+	<macrodef name="sfDelete">
+	        <attribute name="object"/>
+		<attribute name="basedir"/>
+		<attribute name="orgname"/>
+		<attribute name="username"/>
+		<attribute name="password"/>
+		<attribute name="orgserver"/>
+
+	        <sequential>
+	            <echo message="Deleting @{object}"/>
+	            <mkdir dir="@{basedir}/orgs/@{orgname}/data"/>
+	            <copy file="@{basedir}/datascripts/template-delete-process-conf.xml" tofile="@{basedir}/orgs/@{orgname}/data/process-conf.xml" overwrite="true" failonerror="true"/>
+	            <replace file="@{basedir}/orgs/@{orgname}/data/process-conf.xml">
+	                <replacefilter token="_ORGSERVER_" value="@{orgserver}"/>
+	                <replacefilter token="_USERNAME_" value="@{username}"/>
+	                <replacefilter token="_ENCRYPTED_PASSWORD_" value="@{password}"/>
+	                <replacefilter token="_ENCRYPTION_KEY_FILE_" value="@{basedir}/datascripts/dataloader_encryption_key.txt"/>
+	                <replacefilter token="_DEBUG_MSG_FILE_" value="@{basedir}/orgs/@{orgname}/data/debug.log"/>
+	                <replacefilter token="_OBJECT_" value="@{object}"/>
+	                <replacefilter token="_DATA_FILENAME_" value="@{basedir}/datascripts/datafiles/@{object}Delete.csv"/>
+	                <replacefilter token="_MAPPING_FILE_" value="@{basedir}/datascripts/delete.sdl"/>
+	                <replacefilter token="_OUTPUT_SUCCESS_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Delete_success.csv"/>
+	                <replacefilter token="_OUTPUT_ERROR_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Delete_error.csv"/>
+	            	<replacefilter token="_PROCESS_NAME_" value="@{object}DeleteProcess"/>
+	            </replace>
+	            <java classname="com.salesforce.dataloader.process.ProcessRunner" classpath="@{basedir}/lib/dataloader-${dataLoaderAPIVersion}-uber.jar" failonerror="true">
+	                <sysproperty key="salesforce.config.dir" value="@{basedir}/orgs/@{orgname}/data"/>
+	                <arg line="process.name=deleteObject"/>
+	            </java>
+	        </sequential>
+	    </macrodef>
+
+
+    <macrodef name="sfExport">
+        <attribute name="object"/>
+		<attribute name="basedir"/>
+		<attribute name="orgname"/>
+		<attribute name="username"/>
+		<attribute name="password"/>
+		<attribute name="orgserver"/>
+		<attribute name="soql"/>
+
+        <sequential>
+            <echo message="Exporting @{object}"/>
+            <mkdir dir="@{basedir}/orgs/@{orgname}/data"/>
+            <copy file="@{basedir}/datascripts/template-export-process-conf.xml" tofile="@{basedir}/orgs/@{orgname}/data/process-conf.xml" overwrite="true" failonerror="true"/>
+            <replace file="@{basedir}/orgs/@{orgname}/data/process-conf.xml">
+                <replacefilter token="_ORGSERVER_" value="@{orgserver}"/>
+                <replacefilter token="_USERNAME_" value="@{username}"/>
+                <replacefilter token="_ENCRYPTED_PASSWORD_" value="@{password}"/>
+                <replacefilter token="_ENCRYPTION_KEY_FILE_" value="@{basedir}/datascripts/dataloader_encryption_key.txt"/>
+                <replacefilter token="_DEBUG_MSG_FILE_" value="@{basedir}/orgs/@{orgname}/data/debug.log"/>
+                <replacefilter token="_OBJECT_" value="@{object}"/>
+                <replacefilter token="_DATA_FILENAME_" value="@{basedir}/orgs/@{orgname}/data/@{object}Export.csv"/>
+                <replacefilter token="_MAPPING_FILE_" value="@{basedir}/datascripts/mappingfiles/@{object}ExportMap.sdl"/>
+                <replacefilter token="_OUTPUT_SUCCESS_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Export_success.csv"/>
+                <replacefilter token="_OUTPUT_ERROR_FILE_" value="@{basedir}/orgs/@{orgname}/data/@{object}Export_error.csv"/>
+                <replacefilter token="_EXTRACTION_SOQL_" value="@{soql}"/>
+            </replace>
+            <java classname="com.salesforce.dataloader.process.ProcessRunner" classpath="@{basedir}/lib/dataloader-${dataLoaderAPIVersion}-uber.jar" failonerror="true">
+                <sysproperty key="salesforce.config.dir" value="@{basedir}/orgs/@{orgname}/data"/>
+                <arg line="process.name=exportObject"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+	<!-- ============================================================ -->
+	<!-- Miscellaneous Targets		 								  -->
+	<!-- ============================================================ -->
+	<target name="retrieveOrg" description="Retrieves all metadata from the specified organization.  Note - be sure your ANT_OPTS environment variable is set to -Xmx512m or you could get an OutOfMemory error." >
+		<delete dir="${basedir}/orgs/${orgname}/src" />
+		<mkdir dir="${basedir}/orgs/${orgname}/src" />
+
+		<echo>Retrieving code into ${basedir}/orgs/${orgname}/src from ${sf.username}, ${sf.server}</echo>
+		<sf:retrieve 
+		   username="${sf.username}" 
+		   password="${sf.password}" 
+		   serverurl="${sf.server}" 
+		   retrieveTarget="${basedir}/orgs/${orgname}/src"
+		   unpackaged="packages/package-all.xml"
+		   pollWaitMillis="10000"
+		   maxPoll="100"/>
+	</target>
+
+	<target name="generateDocHeader" description="Generates the header for the Apex Docs.">
+	    <delete file="docRes/author.txt" quiet="true"/>
+	    <copy file="docRes/author.txt.tpl" tofile="docRes/author.txt" >
+	        <filterchain>
+	           <replacetokens>
+	                <token key="branchName" value="${branchName}"/>
+	                <token key="revision" value="${revision}"/>
+	                <token key="repositoryName" value="${repositoryName}"/>
+	            </replacetokens>
+	        </filterchain>
+	    </copy>
+	</target>
+
+	<target name="generateDocs" description="Generates the Apex Docs.">
+	    <java fork="true" classname="apex.com.main.SfApexDoc" failonerror="true">
+	        <classpath refid="taskDependencies"/>
+	        <arg line="-s src/classes -t /opt/atlassian/bamboo/current/atlassian-bamboo/static/${commercePackage} -a docRes/author.txt -h docRes/home.txt" />
+	    </java>
+	    <copy file="docRes/logo.png" tofile="/opt/atlassian/bamboo/current/atlassian-bamboo/static/${commercePackage}/SfApexDocs/logo.png" overwrite="true" />
+	</target>
+
+</project>

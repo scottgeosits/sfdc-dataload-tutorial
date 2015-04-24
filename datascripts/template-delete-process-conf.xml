@@ -1,0 +1,31 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="deleteObject"
+        class="com.salesforce.dataloader.process.ProcessRunner"
+        singleton="false">
+        <description>Deletes object records from a CSV file.</description>
+        <property name="name" value="_OBJECT_Delete"/>
+        <property name="configOverrideMap">
+            <map>
+                <entry key="sfdc.endpoint" value="https://_ORGSERVER_.salesforce.com"/>
+                <entry key="sfdc.username" value="_USERNAME_"/>
+                <entry key="sfdc.password" value="_ENCRYPTED_PASSWORD_"/>
+                <entry key="process.encryptionKeyFile" value="_ENCRYPTION_KEY_FILE_"/>
+                <entry key="sfdc.debugMessages" value="true"/>
+                <entry key="sfdc.debugMessagesFile" value="_DEBUG_MSG_FILE_"/>
+                <entry key="sfdc.timeoutSecs" value="600"/>
+                <entry key="sfdc.loadBatchSize" value="200"/>
+		<entry key="sfdc.externalIdField" value="_EXTERNAL_ID_FIELD_"/>
+				
+                <entry key="process.operation" value="delete"/>
+                <entry key="dataAccess.type" value="csvRead"/>
+                <entry key="sfdc.entity" value="_OBJECT_"/>
+                <entry key="dataAccess.name" value="_DATA_FILENAME_"/>
+
+                <entry key="process.mappingFile" value="_MAPPING_FILE_"/>
+                <entry key="process.outputSuccess" value="_OUTPUT_SUCCESS_FILE_"/>
+                <entry key="process.outputError" value="_OUTPUT_ERROR_FILE_"/>
+            </map>
+        </property>
+    </bean>
+</beans>

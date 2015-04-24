@@ -1,0 +1,5 @@
+ant exportData -propertyfile $1 -Dobject=Candidate__c -Dsoql="SELECT Id, Name, Education__c, First_Name__c, Last_Name__c, Load_ID__c, Previous_Experience__c, Salary_Requirements__c, Years_In_Previous_Position__c FROM Candidate__c"
+ant exportData -propertyfile $1 -Dobject=Interviewer__c -Dsoql="SELECT Id, Employee__c, Load_ID__c, Position__c FROM Interviewer__c"
+ant exportData -propertyfile $1 -Dobject=Employee__c -Dsoql="SELECT Id, Name, First_Name__c, Last_Name__c, Load_ID__c, Email__c FROM Employee__c"
+ant exportData -propertyfile $1 -Dobject=Job_Application__c -Dsoql="SELECT Id, Candidate__c, Load_ID__c, Position__c, Stage__c, Status__c FROM Job_Application__c"
+ant exportData -propertyfile $1 -Dobject=Position__c -Dsoql="Select Id, Name, Approval_Status__c, Department__c, Education__c, Hiring_Manager__c, Job_Description__c, Load_ID__c, Location__c, Pay_Grade__c, Salary_Range__c, Skills_Required__c, Status__c FROM Position__c"
