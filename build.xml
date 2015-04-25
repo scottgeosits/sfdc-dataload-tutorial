@@ -271,9 +271,9 @@
         <sfInsert object="someCustomSetting__c" orgserver="${sf.server}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}"/>
     </target>
 
-	<target name="updateDataFiles" description="Refreshes the data files found in datascripts/datafiles from a specified org's data directory.  This expects the exportData target to have been run first to generate output CSV data load files.  Invoke with -Dorg=[org name, ex. asdevqa] to specify the org to copy files from." >
+	<target name="updateDataFiles" description="Refreshes the data files found in datascripts/datafiles from a specified org's data directory.  This expects the exportData target to have been run first to generate output CSV data load files.  Specify the propertyfile for the org you want to copy the files from." >
 	    <copy todir="${basedir}/datascripts/datafiles">
-		<fileset dir="${basedir}/orgs/${org}/data" includes="**/*__cExport.csv"/>
+		<fileset dir="${basedir}/orgs/${orgname}/data" includes="**/*__cExport.csv"/>
 		<mapper type="glob" from="*__cExport.csv" to="*__cInsert.csv"/>
 	    </copy>
 	</target>
