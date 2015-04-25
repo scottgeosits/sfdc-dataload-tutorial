@@ -1,5 +1,5 @@
 LOAD_ID__C=Load_ID__c
 Name=Name
-FirstName=First_Name__c
-LastName=Last_Name__c
-Email=Email__c
+First_Name__c=First_Name__c
+Last_Name__c=Last_Name__c
+Email__c=Email__c
