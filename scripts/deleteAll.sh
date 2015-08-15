@@ -1,0 +1,5 @@
+ant deleteData -propertyfile $1 -Dobject=Job_Application__c -Dsoql="SELECT Id FROM Job_Application__c"
+ant deleteData -propertyfile $1 -Dobject=Interviewer__c -Dsoql="SELECT Id FROM Interviewer__c"
+ant deleteData -propertyfile $1 -Dobject=Position__c -Dsoql="SELECT Id FROM Position__c"
+ant deleteData -propertyfile $1 -Dobject=Candidate__c -Dsoql="SELECT Id FROM Candidate__c"
+ant deleteData -propertyfile $1 -Dobject=Employee__c -Dsoql="SELECT Id FROM Employee__c"
