@@ -249,6 +249,7 @@
 	<!-- ============================================================ -->
     <target name="initDataDirectory" description="Removes and re-creates a blank data directory in orgs/${orgname}">
         <delete dir="${basedir}/orgs/${orgname}/data"/>
+        <mkdir dir="${basedir}/orgs/${orgname}/data"/>
     </target>
 	<target name="insertData" description="Export Salesforce objects">
         <sfInsert object="${object}" orgserver="${sf.server}" basedir="${basedir}" orgname="${orgname}" username="${sf.username}" password="${sf.passwordencrypted}" />
